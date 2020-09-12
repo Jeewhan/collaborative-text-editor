@@ -1,4 +1,5 @@
 import React from "react"
+import classNames from "classnames"
 
 export const StyleButton = ({ onToggle, style, label, active }) => {
   const handleToggle = e => {
@@ -6,14 +7,11 @@ export const StyleButton = ({ onToggle, style, label, active }) => {
     onToggle(style)
   }
 
-  let className = "RichEditor-styleButton"
-  if (active) {
-    className += " RichEditor-activeButton"
-  }
-
   return (
     <span
-      className={className}
+      className={classNames("RichEditor-styleButton", {
+        "RichEditor-activeButton": active,
+      })}
       onMouseDown={handleToggle}
       role="button"
       tabIndex={0}

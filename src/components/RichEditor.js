@@ -10,9 +10,12 @@ import {
   SelectionState,
 } from "draft-js"
 import { stateToHTML } from "draft-js-export-html"
+import classNames from "classnames"
 
 import pusher from "../services/pusher"
 import { BlockStyleControls, InlineStyleControls } from "../components"
+
+import "./RichEditor.css"
 
 const styleMap = {
   CODE: {
@@ -85,18 +88,16 @@ export const RichEditor = () => {
       .bind("text-update", data => {
         setText(data.text)
       })
-      .bind("editor-update", data => {
+      .bind("editor-update", ({ selection, text }) => {
         // create a new selection state from new data
         const newSelection = new SelectionState({
-          anchorKey: data.selection.anchorKey,
-          anchorOffset: data.selection.anchorOffset,
-          focusKey: data.selection.focusKey,
-          focusOffset: data.selection.focusOffset,
+          anchorKey: selection.anchorKey,
+          anchorOffset: selection.anchorOffset,
+          focusKey: selection.focusKey,
+          focusOffset: selection.focusOffset,
         })
         // create new editor state
-        const editorState = EditorState.createWithContent(
-          convertFromRaw(data.text)
-        )
+        const editorState = EditorState.createWithContent(convertFromRaw(text))
         const newEditorState = EditorState.forceSelection(
           editorState,
           newSelection
@@ -106,44 +107,43 @@ export const RichEditor = () => {
   }, [])
 
   // If the user changes block type before entering any text, hide the placeholder.
-  let className = "RichEditor-editor"
   const contentState = editorState.getCurrentContent()
-
-  if (!contentState.hasText()) {
-    if (contentState.getBlockMap().first().getType() !== "unstyled") {
-      className += " RichEditor-hidePlaceholder"
-    }
-  }
+  const isHidePlaceholder =
+    !contentState.hasText() &&
+    contentState.getBlockMap().first().getType() !== "unstyled"
 
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="RichEditor-root col-12 col-md-6">
-          <BlockStyleControls
+    <div>
+      <div className="RichEditor-root">
+        <BlockStyleControls
+          editorState={editorState}
+          onToggle={toggleBlockType}
+        />
+        <InlineStyleControls
+          editorState={editorState}
+          onToggle={toggleInlineStyle}
+        />
+        <div
+          className={classNames("RichEditor-editor", {
+            "RichEditor-hidePlaceholder": isHidePlaceholder,
+          })}
+        >
+          <Editor
+            blockStyleFn={getBlockStyle}
+            customStyleMap={styleMap}
             editorState={editorState}
-            onToggle={toggleBlockType}
+            handleKeyCommand={handleKeyCommand}
+            keyBindingFn={mapKeyToEditorCommand}
+            onChange={handleChange}
+            placeholder="What's on your mind?"
+            spellCheck={true}
           />
-          <InlineStyleControls
-            editorState={editorState}
-            onToggle={toggleInlineStyle}
-          />
-          <div className={className}>
-            <Editor
-              blockStyleFn={getBlockStyle}
-              customStyleMap={styleMap}
-              editorState={editorState}
-              handleKeyCommand={handleKeyCommand}
-              keyBindingFn={mapKeyToEditorCommand}
-              onChange={handleChange}
-              placeholder="What's on your mind?"
-              spellCheck={true}
-            />
-          </div>
-        </div>
-        <div className="col-12 col-md-6">
-          <div dangerouslySetInnerHTML={{ __html: text }} />
         </div>
       </div>
+      <div
+        className="col-12 col-md-6 mt-3"
+        dangerouslySetInnerHTML={{ __html: text }}
+      />
     </div>
   )
 }
