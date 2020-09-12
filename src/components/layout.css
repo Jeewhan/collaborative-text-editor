@@ -1,3 +1,4 @@
+@import url("https://cdn.jsdelivr.net/gh/wan2land/d2coding/d2coding-full.css");
 html {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -10,7 +11,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: hsla(0, 0%, 0%, 0.8);
-  font-family: georgia, serif;
+  font-family: 'D2Coding', monospace;
   font-weight: normal;
   word-wrap: break-word;
   font-kerning: normal;
