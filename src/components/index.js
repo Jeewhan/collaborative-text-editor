@@ -1,3 +1,8 @@
 export { BlockStyleControls } from "./BlockStyleControls"
+export { Header } from "./Header"
+export { Image } from "./Image"
 export { InlineStyleControls } from "./InlineStyleControls"
+export { Layout } from "./Layout"
+export { RichEditor } from "./RichEditor"
+export { SEO } from "./SEO"
 export { StyleButton } from "./StyleButton"
