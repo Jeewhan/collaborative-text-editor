@@ -1,23 +1,19 @@
-import React, { Component } from "react"
+import React from "react"
 
-class StyleButton extends React.Component {
-  constructor() {
-    super()
-    this.onToggle = e => {
-      e.preventDefault()
-      this.props.onToggle(this.props.style)
-    }
+export const StyleButton = ({ onToggle, style, label, active }) => {
+  const handleToggle = e => {
+    e.preventDefault()
+    onToggle(style)
   }
-  render() {
-    let className = "RichEditor-styleButton"
-    if (this.props.active) {
-      className += " RichEditor-activeButton"
-    }
-    return (
-      <span className={className} onMouseDown={this.onToggle}>
-        {this.props.label}
-      </span>
-    )
+
+  let className = "RichEditor-styleButton"
+  if (active) {
+    className += " RichEditor-activeButton"
   }
+
+  return (
+    <span className={className} onMouseDown={handleToggle}>
+      {label}
+    </span>
+  )
 }
-export default StyleButton

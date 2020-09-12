@@ -1,6 +1,6 @@
 import React from "react"
 
-import StyleButton from "./StyleButton"
+import { StyleButton } from "../components"
 
 const BLOCK_TYPES = [
   { label: "H1", style: "header-one" },
