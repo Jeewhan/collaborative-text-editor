@@ -2,7 +2,7 @@ import React from "react"
 
 import { StyleButton } from "../components"
 
-let INLINE_STYLES = [
+const INLINE_STYLES = [
   { label: "Bold", style: "BOLD" },
   { label: "Italic", style: "ITALIC" },
   { label: "Underline", style: "UNDERLINE" },
