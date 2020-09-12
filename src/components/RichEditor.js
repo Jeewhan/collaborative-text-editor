@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import axios from "axios"
 import {
   convertFromRaw,
@@ -9,7 +9,6 @@ import {
   RichUtils,
   SelectionState,
 } from "draft-js"
-import { stateToHTML } from "draft-js-export-html"
 import classNames from "classnames"
 
 import pusher from "../services/pusher"
@@ -27,21 +26,20 @@ const styleMap = {
 
 export const RichEditor = () => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty())
-  const [text, setText] = useState("")
-
-  const notifyPusher = text => {
-    axios.post("http://localhost:5000/save-text", { text })
-  }
+  const socketId = useRef(null)
 
   const notifyPusherEditor = editorState => {
     const selection = editorState.getSelection()
     const text = convertToRaw(editorState.getCurrentContent())
-    axios.post("http://localhost:5000/editor-text", { text, selection })
+    axios.post("http://localhost:5000/editor-text", {
+      text,
+      selection,
+      socketId: socketId.current,
+    })
   }
 
   const handleChange = editorState => {
     setEditorState(editorState)
-    notifyPusher(stateToHTML(editorState.getCurrentContent()))
     notifyPusherEditor(editorState)
   }
 
@@ -83,27 +81,24 @@ export const RichEditor = () => {
   }
 
   useEffect(() => {
-    pusher
-      .subscribe("editor")
-      .bind("text-update", data => {
-        setText(data.text)
+    pusher.subscribe("editor").bind("editor-update", ({ selection, text }) => {
+      // create a new selection state from new data
+      const newSelection = new SelectionState({
+        anchorKey: selection.anchorKey,
+        anchorOffset: selection.anchorOffset,
+        focusKey: selection.focusKey,
+        focusOffset: selection.focusOffset,
       })
-      .bind("editor-update", ({ selection, text }) => {
-        // create a new selection state from new data
-        const newSelection = new SelectionState({
-          anchorKey: selection.anchorKey,
-          anchorOffset: selection.anchorOffset,
-          focusKey: selection.focusKey,
-          focusOffset: selection.focusOffset,
-        })
-        // create new editor state
-        const editorState = EditorState.createWithContent(convertFromRaw(text))
-        const newEditorState = EditorState.forceSelection(
-          editorState,
-          newSelection
-        )
-        setEditorState(newEditorState)
-      })
+      // create new editor state
+      const editorState = EditorState.createWithContent(convertFromRaw(text))
+      const newEditorState = EditorState.forceSelection(
+        editorState,
+        newSelection
+      )
+      setEditorState(newEditorState)
+    })
+
+    socketId.current = pusher.connection.socket_id
   }, [])
 
   // If the user changes block type before entering any text, hide the placeholder.
@@ -140,10 +135,6 @@ export const RichEditor = () => {
           />
         </div>
       </div>
-      <div
-        className="col-12 col-md-6 mt-3"
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
     </div>
   )
 }

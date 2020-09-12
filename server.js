@@ -29,25 +29,19 @@ app.get("/", function (req, res) {
   res.send("all green")
 })
 
-// create a "save-text" route to update Pusher when a new text is added to the editor
-app.post("/save-text", function (req, res) {
-  if (req.body.text && req.body.text.trim() !== "") {
-    // send a 'text-update' event on the 'editor' channel with the editor text
-    pusher.trigger("editor", "text-update", { text: req.body.text })
-    res.status(200).send({ success: true, message: "text broadcasted" })
-  } else {
-    res.status(400).send({ success: false, message: "text not broadcasted" })
-  }
-})
-
 // create a "editor-text" route to update Pusher the latest state of our editor
 app.post("/editor-text", function (req, res) {
   if (req.body.text) {
     // send a 'editor-update' event on the 'editor' channel with the editor current state
-    pusher.trigger("editor", "editor-update", {
-      text: req.body.text,
-      selection: req.body.selection,
-    })
+    pusher.trigger(
+      "editor",
+      "editor-update",
+      {
+        text: req.body.text,
+        selection: req.body.selection,
+      },
+      req.body.socketId
+    )
     res
       .status(200)
       .send({ success: true, message: "editor update broadcasted" })
