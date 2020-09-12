@@ -1,1 +1,2 @@
-export BlockStyleControls from "./BlockStyleControls.js"
+export { BlockStyleControls } from "./BlockStyleControls"
+export { InlineStyleControls } from "./InlineStyleControls"

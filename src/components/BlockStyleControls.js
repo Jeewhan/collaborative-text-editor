@@ -1,6 +1,6 @@
 import React from "react"
 
-import StyleButton from "./styleButton"
+import StyleButton from "./StyleButton"
 
 const BLOCK_TYPES = [
   { label: "H1", style: "header-one" },
@@ -15,7 +15,7 @@ const BLOCK_TYPES = [
   { label: "Code Block", style: "code-block" },
 ]
 
-const BlockStyleControls = ({ editorState, onToggle }) => {
+export const BlockStyleControls = ({ editorState, onToggle }) => {
   const blockType = editorState
     .getCurrentContent()
     .getBlockForKey(editorState.getSelection().getStartKey())
@@ -35,4 +35,3 @@ const BlockStyleControls = ({ editorState, onToggle }) => {
     </div>
   )
 }
-export default BlockStyleControls
