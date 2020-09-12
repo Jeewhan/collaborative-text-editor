@@ -1,7 +1,7 @@
-import React, { Component } from "react"
+import React from "react"
+
 import StyleButton from "./styleButton"
 
-// define our block styles
 const BLOCK_TYPES = [
   { label: "H1", style: "header-one" },
   { label: "H2", style: "header-two" },
@@ -14,23 +14,22 @@ const BLOCK_TYPES = [
   { label: "OL", style: "ordered-list-item" },
   { label: "Code Block", style: "code-block" },
 ]
-const BlockStyleControls = props => {
-  const { editorState } = props
-  const selection = editorState.getSelection()
+
+const BlockStyleControls = ({ editorState, onToggle }) => {
   const blockType = editorState
     .getCurrentContent()
-    .getBlockForKey(selection.getStartKey())
+    .getBlockForKey(editorState.getSelection().getStartKey())
     .getType()
+
   return (
     <div className="RichEditor-controls">
-      {/* map through our block styles and display a style button for each */}
-      {BLOCK_TYPES.map(type => (
+      {BLOCK_TYPES.map(({ label, style }) => (
         <StyleButton
-          key={type.label}
-          active={type.style === blockType}
-          label={type.label}
-          onToggle={props.onToggle}
-          style={type.style}
+          key={label}
+          active={style === blockType}
+          label={label}
+          onToggle={onToggle}
+          style={style}
         />
       ))}
     </div>
