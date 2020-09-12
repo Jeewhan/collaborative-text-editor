@@ -12,7 +12,12 @@ export const StyleButton = ({ onToggle, style, label, active }) => {
   }
 
   return (
-    <span className={className} onMouseDown={handleToggle}>
+    <span
+      className={className}
+      onMouseDown={handleToggle}
+      role="button"
+      tabIndex={0}
+    >
       {label}
     </span>
   )
